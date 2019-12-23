@@ -143,12 +143,5 @@ func main() {
 	fmt.Println(*y)
 }
 ```
-# Types
-
-## integer types
-![integer types](img/integer-types.PNG)
-
-
-  
 
  
