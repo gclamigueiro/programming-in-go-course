@@ -378,3 +378,150 @@ func main() {
 }
  
 ```
+
+
+## Structs
+```go
+package main
+
+import "fmt"
+
+// You can think of a struct as a data structure
+// made up of some fields of data
+type  Rect struct { // struct name
+	Width int
+	Height int
+}
+
+func main() {
+
+	r := Rect{7, 8} // creating a Rect with Width 7 and Height 8
+	r.Width = 18 // we use period operator and the field name directly to set the value
+	fmt.Println(r) // {18,8}
+
+	// pointers and strcuts
+	p := &r
+	p.Width = 10
+	fmt.Println(r) // {10,8}
+
+	var (
+		r1 = Rect {7,8} // type Rect
+		r2 = Rect {Width: 4} // Height is implicitly 0
+		r3 = Rect {} // Width and Height is implicitly 0
+		p1 = Rect {7,8} // type * Rect
+	)
+
+	fmt.Println(r1,r2,r3,p1) 
+
+}
+ 
+```
+
+## Maps
+```go
+package main
+
+import "fmt"
+
+// Maps are one of Go's advanced composite types
+// They are similiar to arrays and slices being a collection of things
+// But they are unordered
+// Maps are a collection of key-value pairs
+
+type Rect struct { // struct name
+	Width  int
+	Height int
+}
+
+func main() {
+	// initializing a map with keys of type
+	//string and values of type Rect
+	var m = map[string]Rect{
+		"Rect1": Rect{1, 2},
+		"Rect2": Rect{4, 6},
+	}
+	fmt.Println(m)
+
+	// we define a map 'w' using the make function
+	w := make(map[string]int)
+
+	w["Answer"] = 10
+	fmt.Println("The value:", w["Answer"])
+
+	w["Answer"] = 20
+	fmt.Println("The value:", w["Answer"])
+
+	// delete a value
+	//  in this case the value is set to zero
+	// because is int
+	delete(w, "Answer")
+
+	// for testing if a key is present
+	// You assing two values on the left side of the expression
+	v, ok := w["Answer"]
+	fmt.Println("The value:", v, "Present?", ok)
+
+}
+```
+
+## Advanced Functions
+```go
+package main
+
+import "fmt"
+
+// variadic function
+// the ... tells the compiler that there could be
+// zero or more parameters, but we aren't sure how many
+func add(args ...int) int {
+	total := 0
+
+	// range allows the for loop to loop through the entire
+	// range of arguments
+	for i, n := range args {
+		print(i)
+		total += n
+	}
+
+	return total
+}
+
+// a function that returns a function
+func fibonacci() func() int {
+	x := 0
+	y := 1
+	fmt.Println(x)
+	// it returs a closure function that use the values of x and y
+	return func() int {
+		x, y = y, x+y
+		return x
+	}
+
+}
+
+func main() {
+	// calling variadic function
+	fmt.Println(add(8, 13, 4, 5, 3))
+
+	// closure functions
+	// a closure function can access local variables
+	a := 4
+	decrement := func() int {
+		a--
+		return a
+	}
+
+	fmt.Println(decrement())
+	fmt.Println(decrement())
+
+	// calling fibonacci function
+	fmt.Println("Fibonacci")
+	f := fibonacci()
+	for i := 0; i < 10; i++ {
+		fmt.Println(f())
+
+	}
+
+}
+
+```
