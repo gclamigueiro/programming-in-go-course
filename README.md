@@ -525,3 +525,230 @@ func main() {
 }
 
 ```
+## Methods
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Root struct {
+	A, B float64
+}
+
+/*
+Methods are Functions declared with a Receiver.
+Receiver is similar to a parameter. It can be a value or a pointer to a named or a struct type
+Receiver is passes before the function name
+*/
+
+// this is a function that use a Pointer as a receiver
+func (r *Root) Hyp() float64 {
+	return math.Sqrt(r.A*r.A + r.B*r.B)
+}
+
+// we have used the type declaration to create a type Root1
+type Root1 float64
+
+// this is a function that use a value as a receiver
+func (r Root1) Abs() float64 {
+	if r < 0 {
+		return float64(-r)
+	}
+	return float64(r)
+
+}
+
+func main() {
+
+	r := Root{5, 6}
+
+	// you can call de method Hyp() in your struct of type Root
+	fmt.Println("C =", r.Hyp())
+
+	// we create a new variable of type Root 1 and
+	// it is initialized with the value of negative square root of 2
+	r1 := Root1(-math.Sqrt2)
+
+	// you can call the method Abs() in the Root1 type
+	fmt.Println("C =", r1.Abs())
+}
+```
+
+## Use Value or Pointer Receiver
+
+### Value Receiver
+- Receiver is map, func, or chan
+- Receiver is an int (include all numeric types) or string
+- Receiver is a small array or struct with no mutable fields or pointers
+
+### Pointer Receiver
+- Method needs to mutate receiver
+- Receiver is a struct containing a synchronization field
+- Receiver is large struct or array
+
+## Interfaces
+
+- Interfaces provides flexibility and abstraction
+- It Specifies how values and pointers of specific type behave
+- It specifies a method set, all methods for an interface type are the interface
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+// defining a Interface with name Notifier
+//  when the Interface has only one method is good practice
+// to give interface a name containing an -er suffix
+// Can specify numerous methods
+type Notifier interface {
+	Notify() error
+}
+
+// note
+// the number of interface in Go's standard library with more than two methods are few and far between
+
+//example,  we define a Calcer interface
+type Calcer interface{ Calc() float64 }
+
+type Square struct{ X, Y float64 }
+type myFloat float64
+
+// we define the Interface Calc to  work on two different types
+// a  myFloat type 
+func (f myFloat) Calc() float64 {
+	if f < 0 {
+		return float64(-f)
+	}
+	return float64(f)
+}
+// and  a Square type
+func (s *Square) Calc() float64 {
+	return math.Sqrt(s.X*s.X + s.Y*s.Y)
+}
+
+func main() {
+
+	var c Calcer
+	f := myFloat(-math.Sqrt2)
+	s := Square{8, 6}
+	c = &s
+
+	// the Method employee in each case depends on the value type
+	fmt.Println(c.Calc())
+	c = f
+	fmt.Println(c.Calc())
+
+}
+```
+
+## Concurrency
+
+- The idea behind concurrency is to be able to run a bunch of smaller tasks by simultaneously synchronizing access to shared memory. Tasks can run independenlty
+- Go's implementation of concurrency is rooted back in the 1970s,back to communicating sequential processes or CSP.
+
+## Concurrency Vs Parallelism
+
+- Concurrency is a series of independently running processes
+- Parallelism is a series of simultaneously running processes
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func f(msg string) {
+
+	for i := 0; i < 10; i++ {
+		fmt.Println(msg, ":", i)
+	}
+}
+
+func main() {
+	// concurrency is implemented by using goroutines
+	go f("value of i") // explicit goroutine
+
+	// using a goroutine th main function doesn't have to wait
+	// until f function returns
+
+	var input string
+	// the call to Scanln is made here because if it was not
+	// the program would exit before the loop finished printing
+	// Scanln waits for input essentially pausing the execution of func main()
+	fmt.Scanln(&input)
+
+	// the function main() itself is an implicit goroutine
+}
+```
+
+## Channels
+
+- Channels are used by goroutines for communication between them and to intelligently synchronize execution. For example, one goroutine can tell another via a channel that a particular task is complete.
+
+- Channels are unbuffered (synchronous channel) or buffered. Channels are unbuffered by default
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+/*Unbuffered Channel will accept a "send" only if there is "receive"  waiting for the corresponding send value
+By default sends and receives will be blocked until both sender and receiver are ready
+*/
+func sum(a []int, ch chan int) {
+	sum := 0
+	for _, v := range a {
+		sum += v
+	}
+	// the sum is sent on the channel
+	ch <- sum
+}
+
+func main() {
+	a := []int{7, 0, -3, 5, 0, 4}
+
+	// we create an integer channel
+	ch := make(chan int)
+
+	// we call goroutines passing the channel
+	go sum(a[:len(a)/2], ch)
+	go sum(a[len(a)/2:], ch)
+
+	//the execution of the rechannel operations gets blocked
+	// until goroutines write data to the channel
+	x, y := <-ch, <-ch 
+
+	fmt.Println(x, y, x+y)
+
+	// buffered channels can accept a defined number of values even if
+	// there isn't a corresponding receiver for those values
+	c := make(chan int, 5) // channel of length of 5
+
+	// we place the values 1 and 3 in the buffer
+	c <- 1
+	c <- 3
+
+	// we receive them
+	fmt.Println(<-c)
+	fmt.Println(<-c)
+
+	// you have to be careful not to overfill the buffer
+	// if that occurs, you'll get a scary deadlock error
+	// that states that all goroutines are asleep
+}
+```
+
+
+
+
+
