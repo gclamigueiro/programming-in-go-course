@@ -271,6 +271,23 @@ func main() {
 }
 ```
 
+# Packages in Go
+- Each Go program begins execution in a package named main
+
+## Key Pacakges
+
+- strings : for manipulating strings values
+- io : input and output functions
+- bytes : for manipulating byte data. Provide similar functionality on byte data that strings does for string data
+- os : supplies an interface that is platform independent for manipulating and managing files and folders
+- path/filepath : similarly to os
+- errors : for manipulating errors. It can allow you to create a custom error in addition to the built-in ones 
+- container/list : Implements a doubly linked list
+- hash : Hashes and cryptography
+- encoding/gob : Allows you to enconde values. it allow for example create a network server that can handle client requests
+- net/rpc/jsonrpc : For managing remote procedure calls. These packages provide a way to make methods available so they could be  called over a network
+
+
 # Arrays in go
 ```go
 package main
