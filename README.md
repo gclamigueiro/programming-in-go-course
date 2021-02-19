@@ -425,7 +425,7 @@ func main() {
 		r1 = Rect {7,8} // type Rect
 		r2 = Rect {Width: 4} // Height is implicitly 0
 		r3 = Rect {} // Width and Height is implicitly 0
-		p1 = Rect {7,8} // type * Rect
+		p1 = &Rect {7,8} // type * Rect
 	)
 
 	fmt.Println(r1,r2,r3,p1) 
